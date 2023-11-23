@@ -1,0 +1,41 @@
+Init duration with cold start without Snapshot : 
+
+REPORT RequestId: 7951f4de-7e8f-4d3b-b082-e76c6c356a61	Duration: 68.14 ms	Billed Duration: 69 ms	Memory Size: 2048 MB	Max Memory Used: 185 MB	Init Duration: 3104.59 ms	
+
+Total time for API : 3.85s
+
+Updated published version took around 3s for a version with snapstart:
+
+INIT_REPORT Init Duration: 2922.43 ms
+
+Cold start with new Version with snapstart:
+
+Total time for req-resp : 1476 ms 61% -70% extra time 
+
+RESTORE_REPORT Restore Duration: 982.56 ms
+
+REPORT RequestId: e2af7797-40ea-4d30-87da-4f9d1ae749e0	Duration: 146.73 ms	Billed Duration: 404 ms	Memory Size: 2048 MB	Max Memory Used: 159 MB	Restore Duration: 982.56 ms	Billed Restore Duration: 257 ms	
+
+https://docs.aws.amazon.com/lambda/latest/dg/snapstart-runtime-hooks.html
+
+...
+  import org.crac.Resource;
+  import org.crac.Core;
+  ... 
+public class CRaCDemo implements RequestStreamHandler, Resource {
+    public CRaCDemo() {
+      Core.getGlobalContext().register(this);
+    }
+    public String handleRequest(String name, Context context) throws IOException {
+      System.out.println("Handler execution");
+      return "Hello " + name;
+    }
+    @Override
+    public void beforeCheckpoint(org.crac.Context<? extends Resource> context)
+        throws Exception {
+      System.out.println("Before checkpoint");
+    }
+    @Override
+    public void afterRestore(org.crac.Context<? extends Resource> context)
+        throws Exception {
+      System.out.println("After restore");
